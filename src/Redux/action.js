@@ -1,5 +1,5 @@
 import axios from  "axios";
-import { ERROR_DATA, LOADING_DATA, SUCCESS_DATA } from "./actionType";
+import { ERROR_DATA, LOADING_DATA, REMOVE_BASKET, SUCCESS_DATA } from "./actionType";
 
 
 export const getData=()=>async(dispatch)=>{
@@ -20,5 +20,10 @@ export const getData=()=>async(dispatch)=>{
    catch(err){
     dispatch({type: ERROR_DATA})
    }
-}
+} 
+
+export const removeFromBasket = (product) => {
+    console.log("form action:",product)
+    return { type: REMOVE_BASKET, payload: product };
+  };
 

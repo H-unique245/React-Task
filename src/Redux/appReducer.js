@@ -1,4 +1,4 @@
-import { ERROR_BASKET, ERROR_DATA, LOADING_BASKET, LOADING_DATA, SUCCESS_BASKET, SUCCESS_DATA } from "./actionType"
+import { ERROR_BASKET, ERROR_DATA, LOADING_BASKET, LOADING_DATA, REMOVE_BASKET, SUCCESS_BASKET, SUCCESS_DATA } from "./actionType"
 
 const appState= {
     loading: false,
@@ -34,7 +34,7 @@ switch (type){
 
  case LOADING_BASKET:{
     return {...state,
-        loading:true
+        loading_cart:true
     }
  }
 
@@ -46,12 +46,42 @@ switch (type){
  }
 
  case SUCCESS_BASKET :{
-    return {...state,
-        loading_cart:false,
-        error_cart: false,
-        basket: payload
-    }
+     // Check if the item is already in the basket
+  const existingItem = state.basket.find((item) => item._id === payload._id);
+  if (existingItem) {
+    // If the item is already in the basket, replace it with the new one
+    const updatedBasket = state.basket.map((item) =>
+      item._id === payload._id ? payload : item
+    );
+    return {
+      ...state,
+      loading_cart: false,
+      error_cart: false,
+      basket: updatedBasket,
+    };
+  } else {
+    // If the item is not in the basket, add it
+    return {
+      ...state,
+      loading_cart: false,
+      error_cart: false,
+      basket: [...state.basket, payload],
+    };
+  }
  }
+ 
+ case REMOVE_BASKET: {
+    // const updatedBasket = state.basket.filter((product) => {
+    //   return product._id !== payload._id;
+    // });
+    return {
+      ...state,
+      loading_cart: false,
+      error_cart: false,
+      basket: [...state.basket].filter((product) => product._id !== payload._id )
+    };
+  }
+
  default: {
     return state
  }

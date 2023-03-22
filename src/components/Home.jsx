@@ -1,82 +1,46 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getData } from "../Redux/action";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  Image,
-  Stack,
-  Heading,
-  Text,
-  Divider,
-  ButtonGroup,
-  Button,
-  SimpleGrid,
-} from "@chakra-ui/react";
+import { Image, Button, SimpleGrid, Box, Heading } from "@chakra-ui/react";
+
+import { useNavigate } from "react-router-dom";
+import ProductCard from "./ProductCard";
 
 function Home() {
-  const { data, loading, /*error */ } = useSelector((store) => store.app);
-
+  const { data, loading, error } = useSelector((store) => store.app);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-
-const handleAddBasket=(data)=>{
-  console.log(data);
-}
 
   useEffect(() => {
     dispatch(getData());
   }, []);
 
+  if (error) {
+    return <Box> Error .... </Box>;
+  }
   return (
     <div>
-      <h2>Home Page</h2>
+      <Heading>Home Page</Heading>
+      <Button
+        onClick={() => {
+          navigate("/cart");
+        }}
+      >
+        Go To Cart Page
+      </Button>
       {loading ? (
         <Image
           src="https://icon-library.com/images/loading-gif-icon/loading-gif-icon-9.jpg"
           alt="loading"
         />
       ) : (
-        <SimpleGrid columns={[2, 3, 4]} gap="1.6rem" padding={"3rem"}>
+        <SimpleGrid
+          columns={[1, 2, 3, 4]}
+          gap="1.6rem"
+          padding={{ base: "0.8rem", sm: "1rem", md: "2rem", lg: "3rem" }}
+        >
           {data?.map((product) => (
-            <Card maxW="sm" key={product._id}>
-              <CardBody
-                transition="0.3s ease-in-out"
-                _hover={{
-                  transform: "scale(1.08)",
-                  bgColor: "blackAlpha.50",
-                }}
-              >
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  borderRadius="lg"
-                />
-                <Stack mt="6" spacing="3">
-                  <Heading size="md">{product.name}</Heading>
-                  <Text>{product.description}</Text>
-                  <Stack direction={'column'}>
-                  <Text color="pink.600" fontSize="xl" textDecoration={'line-through'}>
-                    Price :  $ {product.price}
-                  </Text>
-                  <Text color="blue.600" fontSize="xl" >
-                    Discounted Price :  $ {product.discountAmount}
-                  </Text>
-                  </Stack>
-                </Stack>
-              </CardBody>
-              <Divider />
-              <CardFooter>
-                <ButtonGroup spacing="2">
-                  <Button variant="solid" colorScheme="blue">
-                    Buy now
-                  </Button>
-                  <Button variant="ghost" colorScheme="blue" onClick={()=>handleAddBasket(product)}>
-                    Add to cart
-                  </Button>
-                </ButtonGroup>
-              </CardFooter>
-            </Card>
+            <ProductCard product={product} key={product._id} />
           ))}
         </SimpleGrid>
       )}
